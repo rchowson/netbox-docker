@@ -429,18 +429,16 @@ fi
 if [ -z "${BUILDX_BUILDER_NAME}" ]; then
   BUILDX_BUILDER_NAME="$(basename "${PWD}")"
 fi
-if ! docker buildx ls | grep --quiet --word-regexp "${BUILDX_BUILDER_NAME}"; then
-  echo "👷  Creating new Buildx Builder '${BUILDX_BUILDER_NAME}'"
-  $DRY docker buildx create --name "${BUILDX_BUILDER_NAME}"
-  BUILDX_BUILDER_CREATED="yes"
-fi
+#if ! docker buildx ls | grep --quiet --word-regexp "${BUILDX_BUILDER_NAME}"; then
+#  echo "👷  Creating new Buildx Builder '${BUILDX_BUILDER_NAME}'"
+#  $DRY docker buildx create --name "${BUILDX_BUILDER_NAME}"
+#  BUILDX_BUILDER_CREATED="yes"
+#fi
 
 echo "🐳 Building the Docker image '${TARGET_DOCKER_TAG_PROJECT}'."
 echo "    Build reason set to: ${BUILD_REASON}"
-$DRY docker buildx \
-  --builder "${BUILDX_BUILDER_NAME}" \
-  build \
-  "${DOCKER_BUILD_ARGS[@]}" \
+$DRY buildah bud \
+   "${DOCKER_BUILD_ARGS[@]}" \
   .
 echo "✅ Finished building the Docker images"
 gh_echo "::endgroup::" # End group for Build
